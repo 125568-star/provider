@@ -254,8 +254,8 @@ a.client-open{display:inline-flex;align-items:center;text-decoration:none}
 .client-appointments-table .client-appointment-row:focus-visible{background:var(--paper)}
 .client-appointments-table .client-appointment-row:focus-visible{outline:2px solid var(--blue);outline-offset:-2px}
 
-/* Primary navigation: only Dashboard and Clients are visible. Other page routes remain intact. */
-nav.tabs > a:not([href="./dashboard.html"]):not([href="./clients.html"]){display:none}
+/* Provider primary navigation: Dashboard, Clients, Equipment and Employees. */
+nav.tabs > a{display:inline-flex}
 
 /* Simple signed-in header: account name above its real role, no impersonation selector. */
 .top .as{display:none}
