@@ -97,7 +97,7 @@ const SYDNEY_EVENTS = [
 ];
 let dashboardPrefs = {...LOCATION_DEFAULT};
 const dashboardInitialParams = new URLSearchParams(location.search);
-let dashboardTab = location.pathname.endsWith('/dashboard.html') && dashboardInitialParams.get('tab')==='clients' ? 'clients' : 'general';
+let dashboardTab = location.pathname.endsWith('/dashboard.html') && ['clients','employees'].includes(dashboardInitialParams.get('tab')) ? dashboardInitialParams.get('tab') : 'general';
 let dashboardSelectedDate = location.pathname.endsWith('/dashboard.html') && /^\d{4}-\d{2}-\d{2}$/.test(dashboardInitialParams.get('date')||'') ? dashboardInitialParams.get('date') : null;
 let dashboardGeneralSelectedDate = null;
 let dashboardLocationEditing = false;
@@ -262,6 +262,55 @@ function dashboardWeeklyClients(today){
     '</div>';
 }
 
+/* Employees tab mirrors the Clients weekly agenda, with illustrated driver portraits. */
+function dashboardWeeklyEmployees(today){
+  const base=new Date(Date.UTC(today.year,today.month-1,today.day));
+  const monday=new Date(base.getTime()-((base.getUTCDay()+6)%7)*86400000);
+  const days=Array.from({length:7},(_,i)=>new Date(monday.getTime()+i*86400000));
+  const iso=d=>d.toISOString().slice(0,10);
+  const first=iso(days[0]),last=iso(days[6]),current=iso(base);
+  if(!dashboardSelectedDate||dashboardSelectedDate<first||dashboardSelectedDate>last) dashboardSelectedDate=current;
+  const labelDate=d=>new Intl.DateTimeFormat('en-AU',{day:'numeric',month:'long',year:'numeric',timeZone:'UTC'}).format(d);
+  const shortDate=date=>new Intl.DateTimeFormat('en-AU',{weekday:'short',day:'numeric',month:'short',timeZone:'UTC'}).format(new Date(date+'T12:00:00Z'));
+  const weekday=d=>new Intl.DateTimeFormat('en-AU',{weekday:'short',timeZone:'UTC'}).format(d);
+  const trips=(transport?.trips||[]).filter(t=>t.trip_date>=first&&t.trip_date<=last)
+    .sort((a,b)=>(a.trip_date+' '+(a.trip_time||'')).localeCompare(b.trip_date+' '+(b.trip_time||'')));
+  const buttons=days.map(day=>{
+    const date=iso(day),count=trips.filter(t=>t.trip_date===date).length;
+    const isToday=date===current,isSelected=date===dashboardSelectedDate;
+    return '<button type="button" data-dash-client-date="'+date+'" class="client-week-day dash-selectable-day'+
+      (isToday?' client-week-today':'')+(isSelected?' dash-day-selected':'')+'"'+
+      (isToday?' aria-current="date"':'')+' aria-pressed="'+isSelected+'" aria-label="'+
+      weekday(day)+' '+labelDate(day)+', '+count+' employee transport appointments">'+
+      '<small>'+weekday(day)+'</small><strong>'+day.getUTCDate()+'</strong>'+
+      '<span class="client-week-count">'+(count?count+' job'+(count===1?'':'s'):'—')+'</span></button>';
+  }).join('');
+  const selected=trips.filter(t=>t.trip_date===dashboardSelectedDate);
+  const rows=selected.map(t=>{
+    const employee=transport.employees.find(e=>e.id===t.employee_id);
+    const avatar=employee&&typeof employeeAvatar==='function'?employeeAvatar(employee):
+      '<span class="client-avatar client-initials" aria-hidden="true">?</span>';
+    const name=employee?.full_name||'Unassigned';
+    const clients=tripClients(t.id).map(c=>c.full_name).join(', ');
+    const time=typeof clientAppointmentTime==='function'?clientAppointmentTime(t.trip_time):t.trip_time?.slice(0,5)||'Not set';
+    return '<tr class="dash-appointment-row" role="link" tabindex="0" data-dash-appointment-href="./transport-appointment.html?id='+encodeURIComponent(t.id)+'">'+
+      '<td><span class="dash-appointment-client">'+avatar+'<strong>'+esc(name)+'</strong></span></td>'+
+      '<td><strong class="dash-appointment-title">'+esc(t.title)+'</strong>'+
+        '<small>'+esc(equipmentName(t.equipment_id))+(clients?' · '+esc(clients):'')+'</small></td>'+
+      '<td class="dash-appointment-time">'+esc(time)+'</td></tr>';
+  }).join('');
+  return '<div class="dash-weekly-clients" role="tabpanel">'+
+    '<div class="client-week-heading"><div><h3>This week</h3><p class="hint">'+
+      esc(labelDate(days[0]))+' – '+esc(labelDate(days[6]))+'</p></div>'+
+      '<span class="chip approved">Today: '+esc(shortDate(current))+'</span></div>'+
+    '<div class="client-week-grid" aria-label="Employees weekly schedule">'+buttons+'</div>'+
+    '<div class="client-appointments-heading"><h3>Transport — '+esc(shortDate(dashboardSelectedDate))+'</h3>'+
+      '<span class="chip approved">'+selected.length+' appointment'+(selected.length===1?'':'s')+'</span></div>'+
+    (rows?'<div class="scroll"><table class="client-appointments-table dash-all-clients-table">'+
+      '<thead><tr><th>Employee</th><th>Appointment / Clients</th><th>Time</th></tr></thead><tbody>'+rows+'</tbody></table></div>':
+      '<div class="empty">No employee transport appointments for this day.</div>')+'</div>';
+}
+
 function viewDashboard(){
   const location=dashboardPrefs||LOCATION_DEFAULT;
   const timezone=STATE_TIMEZONES[location.state]||'Australia/Brisbane';
@@ -291,8 +340,9 @@ function viewDashboard(){
     (dashboardPrefError?'<p class="errbox">'+esc(dashboardPrefError)+'</p>':'')+
     '<div class="dash-inner-tabs" role="tablist" aria-label="What’s On categories">'+
     '<button type="button" role="tab" data-dash-tab="general" aria-selected="'+(dashboardTab==='general')+'">General</button>'+
-    '<button type="button" role="tab" data-dash-tab="clients" aria-selected="'+(dashboardTab==='clients')+'">Clients</button></div>'+
-    (dashboardTab==='clients' ? dashboardWeeklyClients(now) :
+    '<button type="button" role="tab" data-dash-tab="clients" aria-selected="'+(dashboardTab==='clients')+'">Clients</button>'+ 
+    '<button type="button" role="tab" data-dash-tab="employees" aria-selected="'+(dashboardTab==='employees')+'">Employees</button></div>'+
+    (dashboardTab==='clients' ? dashboardWeeklyClients(now) : dashboardTab==='employees' ? dashboardWeeklyEmployees(now) :
       '<div class="dash-calendar-layout" role="tabpanel"><div><h4>'+esc(monthName)+'</h4>'+
       dashboardCalendarDays(year,month,events,now,dashboardGeneralSelectedDate)+'</div><div>'+
       '<div class="dash-events-heading"><h4>'+(generalDayTitle?'Events — '+esc(generalDayTitle):'Dates to know')+'</h4>'+
