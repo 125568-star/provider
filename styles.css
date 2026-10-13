@@ -261,3 +261,35 @@ nav.tabs > a{display:inline-flex}
 .top .as{display:none}
 .top .me{min-width:0}
 .top .me strong{font-weight:700}
+
+
+/* Provider employees share the Clients directory and weekly-calendar visual language. */
+.employee-directory-hint{margin:0 0 15px}
+.employee-directory-table{min-width:650px}
+.employee-directory-table td{vertical-align:middle}
+.employee-identity .client-avatar{width:48px;height:48px}
+.employee-add-link{display:inline-block;text-decoration:none}
+.employee-profile-heading .employee-avatar{width:68px;height:68px}
+.employee-profile-heading .hint{margin-top:3px}
+.employee-profile-heading .ghost{margin-left:auto}
+.employee-notes{margin:0 0 20px;padding:16px 20px}
+.employee-notes strong{color:var(--navy)}
+.employee-notes p{margin-top:4px;white-space:pre-wrap}
+.employee-avatar-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:12px 0 6px;max-width:600px}
+.employee-avatar-option{display:flex;align-items:center;flex-direction:column;gap:8px;cursor:pointer;background:var(--paper);border:2px solid var(--line);border-radius:12px;padding:12px 8px;text-align:center;font-size:.88rem}
+.employee-avatar-option:has(input:checked){border-color:var(--blue);background:var(--off-bg)}
+.employee-avatar-option:focus-within{outline:2px solid var(--magenta);outline-offset:2px}
+.employee-avatar-option input{width:auto;align-self:flex-end;margin:0}
+.employee-avatar-option img{display:block;width:78px;height:78px;border-radius:50%}
+.employee-appointments-table{min-width:850px}
+.employee-appointment-row{cursor:pointer}
+.employee-passenger{display:flex;align-items:center;gap:8px;margin:4px 0}
+.employee-passenger .client-avatar{width:34px;height:34px}
+.employee-passenger a{text-decoration:underline;text-underline-offset:2px}
+.employee-passenger small{display:block}
+@media(max-width:600px){
+  .employee-avatar-options{gap:5px}
+  .employee-avatar-option{padding:9px 3px}
+  .employee-avatar-option img{width:58px;height:58px}
+  .employee-avatar-option span{font-size:.75rem}
+}
