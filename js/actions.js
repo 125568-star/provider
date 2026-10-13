@@ -112,7 +112,7 @@ const ACT = {
 };
 document.addEventListener('click', e => {
   const choice = e.target.closest('[data-theme-choice]'); if (choice) { setTheme(choice.dataset.themeChoice); return; }
-  const a = e.target.closest('[data-act]'); if (a) return ACT[a.dataset.act]?.(a.dataset);
+  const a = e.target.closest('[data-act]'); if (a) return (transportActions[a.dataset.act] || ACT[a.dataset.act])?.(a.dataset);
   const t = e.target.closest('[data-tab]'); if (t) { location.href = './'+TAB_PATH[t.dataset.tab]; return; }
   const m = e.target.closest('[data-mode]'); if (m) { authMode = m.dataset.mode; renderAuth(); }
 });
