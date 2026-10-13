@@ -45,7 +45,7 @@ function viewClients(){
   const records=[...D.clientRecords].sort((a,b)=>a.full_name.localeCompare(b.full_name));
   const directory = records.length ?
     '<div class="scroll"><table><thead><tr><th>Client</th><th>Age</th><th>Contact</th><th>Coordinator</th><th></th></tr></thead><tbody>'+
-      records.map(c=>'<tr><td><span class="client-identity">'+clientAvatar(c)+'<a class="link" href="./client.html?id='+encodeURIComponent(c.id)+'"><strong>'+esc(c.full_name)+'</strong></a></span></td><td>'+ageFor(c.date_of_birth)+'</td><td>'+esc(c.email||c.phone||'—')+'</td><td>'+esc(coordinatorName(c))+'</td><td class="act"><a class="ghost sm client-open" href="./client.html?id='+encodeURIComponent(c.id)+'">Open</a></td></tr>').join('')+
+      records.map(c=>'<tr class="record-row" role="link" tabindex="0" data-row-href="./client.html?id='+encodeURIComponent(c.id)+'" aria-label="Open '+esc(c.full_name)+' client profile"><td><span class="client-identity">'+clientAvatar(c)+'<a class="link" href="./client.html?id='+encodeURIComponent(c.id)+'"><strong>'+esc(c.full_name)+'</strong></a></span></td><td>'+ageFor(c.date_of_birth)+'</td><td>'+esc(c.email||c.phone||'—')+'</td><td>'+esc(coordinatorName(c))+'</td><td class="act"><a class="ghost sm client-open" href="./client.html?id='+encodeURIComponent(c.id)+'">Open</a></td></tr>').join('')+
     '</tbody></table></div>' : '<div class="empty">No clients yet. Select Add Client to get started.</div>';
   const accountClients=byRole('client');
   const accounts = !accountClients.length ? '' :
