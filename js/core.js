@@ -1,7 +1,7 @@
 /* ---------- connection (the anon key is public by design; Row Level Security protects the data) ---------- */
 const SUPABASE_URL = 'https://fudujpxplvlrcwtdcaas.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1ZHVqcHhwbHZscmN3dGRjYWFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4ODY0MDgsImV4cCI6MjEwNzQ2MjQwOH0.qyr2-Ji18qhYDDIe1kHeDntf6UR4kTjSnpdZucBhCo0';
-const TABLE = {profiles:'profiles', companies:'companies', appts:'appointments', assigns:'provider_assignments', reqs:'change_requests', clientRecords:'client_records',recordAppts:'client_record_appointments'};
+const TABLE = {profiles:'profiles', companies:'companies', appts:'appointments', assigns:'provider_assignments', reqs:'change_requests', clientRecords:'client_records',recordAppts:'client_record_appointments',tasks:'work_tasks'};
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const ROLE_LABEL = {admin:'Admin',coordinator:'Provider',provider_company:'Provider company',provider_staff:'Provider staff',client:'Client',family:'Family'};
@@ -9,8 +9,8 @@ const ROLE_PLURAL = {admin:'Admins',coordinator:'Providers',provider_company:'Pr
 const ORDER = ['admin','coordinator','provider_company','provider_staff','client','family'];
 const app = document.getElementById('app'), dlg = document.getElementById('dlg');
 let me = null, view = null, tab = document.body.dataset.page || 'dashboard', authMode = 'signin', loadErrs = [];
-const TAB_PATH = {equipment:'equipment.html',employees:'employees.html',transportAppointment:'transport-appointment.html',dashboard:'dashboard.html',appointments:'calendar.html',requests:'requests.html',clients:'clients.html',people:'people.html',companies:'companies.html'};
-let D = {profiles:[],companies:[],appts:[],assigns:[],reqs:[],clientRecords:[],recordAppts:[]};
+const TAB_PATH = {equipment:'equipment.html',employees:'employees.html',transportAppointment:'transport-appointment.html',dashboard:'dashboard.html',appointments:'calendar.html',requests:'requests.html',clients:'clients.html',people:'people.html',companies:'companies.html',tasks:'tasks.html'};
+let D = {profiles:[],companies:[],appts:[],assigns:[],reqs:[],clientRecords:[],recordAppts:[],tasks:[]};
 let selectedClient = null;
 let recovering = /type=recovery/.test(location.hash);
 
@@ -115,7 +115,7 @@ function renderRecovery(){
 const pendReqs = () => D.reqs.filter(r => r.status === 'pending').length;
 const pendUsers = () => D.profiles.filter(p => !p.approved).length;
 function tabsFor(){
-  const t = [['dashboard','Dashboard'],['employees','Employees'],['equipment','Equipment'],['clients','Clients']];
+  const t = [['dashboard','Dashboard'],['employees','Employees'],['equipment','Equipment'],['clients','Clients'],['tasks','Tasks']];
   return t;
 }
 function render(){
@@ -129,7 +129,7 @@ function render(){
     <button class="ghost sm" data-act="signout">Sign out</button></div></header>
     ${isCoord() && (pr || pu) ? `<div class="banner">${pr ? `<button class="link" data-tab="requests"><strong>${pr} request${pr>1?'s':''} to review</strong></button>` : ''}${pu ? `<button class="link" data-tab="people"><strong>${pu} ${pu>1?'people':'person'} waiting for approval</strong></button>` : ''}</div>` : ''}
     <nav class="tabs" aria-label="Sections">${tabsFor().map(([k,l,c]) => `<a href="./${TAB_PATH[k]}"${k===tab?' aria-current="page"':''}>${l}${c ? `<span class="count">${c}</span>` : ''}</a>`).join('')}</nav>
-    <main>${loadErrs.length ? `<div class="errbox">Some data could not be loaded:<br>${loadErrs.map(esc).join('<br>')}</div>` : ''}${location.pathname.endsWith("/appointment.html") ? viewAppointmentDetail() : {transportAppointment:viewTransportAppointment,equipment:viewEquipment,employees:viewEmployees,dashboard:viewDashboard, appointments:viewAppts, requests:viewReqs, clients:viewClients, people:viewPeople, companies:viewCompanies}[tab]()}</main>`;
+    <main>${loadErrs.length ? `<div class="errbox">Some data could not be loaded:<br>${loadErrs.map(esc).join('<br>')}</div>` : ''}${location.pathname.endsWith("/appointment.html") ? viewAppointmentDetail() : tab === 'tasks' ? viewTasks() : {transportAppointment:viewTransportAppointment,equipment:viewEquipment,employees:viewEmployees,dashboard:viewDashboard, appointments:viewAppts, requests:viewReqs, clients:viewClients, people:viewPeople, companies:viewCompanies}[tab]()}</main>`;
 }
 
 /* ----- which clients can the current view see? ----- */
