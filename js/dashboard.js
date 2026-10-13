@@ -351,7 +351,7 @@ function viewDashboard(){
     (dashboardTab==='general'?'<p class="dash-source-note">'+generalNote+'</p>'+
       '<div class="dash-source-links"><a href="'+esc(localSource)+'">'+esc(location.state)+' public holidays ↗</a>'+
       (citySource?'<a href="'+esc(citySource)+'">'+esc(location.city)+' events ↗</a>':'')+'</div>'
-     :'<p class="dash-source-note">All clients’ appointments for the current week. Select a client to see their full page.</p>')+
+     :'<p class="dash-source-note">'+(dashboardTab==='employees'?'Employee transport schedules for this week. Select an employee in the Employees tab to view their full profile.':'All clients’ appointments for the current week. Select a client to see their full page.')+'</p>')+
     '</section>';
 }
 document.addEventListener('click',e=>{
