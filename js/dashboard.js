@@ -340,8 +340,8 @@ function viewDashboard(){
     (dashboardPrefError?'<p class="errbox">'+esc(dashboardPrefError)+'</p>':'')+
     '<div class="dash-inner-tabs" role="tablist" aria-label="What’s On categories">'+
     '<button type="button" role="tab" data-dash-tab="general" aria-selected="'+(dashboardTab==='general')+'">General</button>'+
-    '<button type="button" role="tab" data-dash-tab="clients" aria-selected="'+(dashboardTab==='clients')+'">Clients</button>'+ 
-    '<button type="button" role="tab" data-dash-tab="employees" aria-selected="'+(dashboardTab==='employees')+'">Employees</button></div>'+
+    '<button type="button" role="tab" data-dash-tab="employees" aria-selected="'+(dashboardTab==='employees')+'">Employees</button>'+
+    '<button type="button" role="tab" data-dash-tab="clients" aria-selected="'+(dashboardTab==='clients')+'">Clients</button></div>'+
     (dashboardTab==='clients' ? dashboardWeeklyClients(now) : dashboardTab==='employees' ? dashboardWeeklyEmployees(now) :
       '<div class="dash-calendar-layout" role="tabpanel"><div><h4>'+esc(monthName)+'</h4>'+
       dashboardCalendarDays(year,month,events,now,dashboardGeneralSelectedDate)+'</div><div>'+
