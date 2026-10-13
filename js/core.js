@@ -51,7 +51,7 @@ async function loadAll(){
     if (error) { loadErrs.push(TABLE[k] + ': ' + error.message); D[k] = []; } else D[k] = data || [];
   }));
   if(typeof transportLoad==='function') await transportLoad();
-  if((tab==='dashboard' || location.pathname.endsWith('/client.html')) && typeof loadDashboardPrefs === 'function') await loadDashboardPrefs();
+  if((tab==='dashboard' || location.pathname.endsWith('/client.html') || location.pathname.endsWith('/employee.html')) && typeof loadDashboardPrefs === 'function') await loadDashboardPrefs();
 }
 async function run(p, ok){
   const {data, error} = await p;
