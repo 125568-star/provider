@@ -1,6 +1,6 @@
 /* ---------- connection (the anon key is public by design; Row Level Security protects the data) ---------- */
-const SUPABASE_URL = 'https://pulbcpjwxliwnmkiyfhe.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1bGJjcGp3eGxpd25ta2l5ZmhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE3MDYzNDksImV4cCI6MjEwNzI4MjM0OX0.skxulb3shDKFhigAL2en1qV6ePytzTHBdBrPvW3CHl0';
+const SUPABASE_URL = 'https://fudujpxplvlrcwtdcaas.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1ZHVqcHhwbHZscmN3dGRjYWFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4ODY0MDgsImV4cCI6MjEwNzQ2MjQwOH0.qyr2-Ji18qhYDDIe1kHeDntf6UR4kTjSnpdZucBhCo0';
 const TABLE = {profiles:'profiles', companies:'companies', appts:'appointments', assigns:'provider_assignments', reqs:'change_requests', clientRecords:'client_records',recordAppts:'client_record_appointments'};
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
