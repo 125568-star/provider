@@ -9,7 +9,7 @@ const ROLE_PLURAL = {admin:'Admins',coordinator:'Providers',provider_company:'Pr
 const ORDER = ['admin','coordinator','provider_company','provider_staff','client','family'];
 const app = document.getElementById('app'), dlg = document.getElementById('dlg');
 let me = null, view = null, tab = document.body.dataset.page || 'dashboard', authMode = 'signin', loadErrs = [];
-const TAB_PATH = {dashboard:'dashboard.html',appointments:'calendar.html',requests:'requests.html',clients:'clients.html',people:'people.html',companies:'companies.html'};
+const TAB_PATH = {equipment:'equipment.html',employees:'employees.html',transportAppointment:'transport-appointment.html',dashboard:'dashboard.html',appointments:'calendar.html',requests:'requests.html',clients:'clients.html',people:'people.html',companies:'companies.html'};
 let D = {profiles:[],companies:[],appts:[],assigns:[],reqs:[],clientRecords:[],recordAppts:[]};
 let selectedClient = null;
 let recovering = /type=recovery/.test(location.hash);
@@ -50,6 +50,7 @@ async function loadAll(){
     const {data, error} = await sb.from(TABLE[k]).select('*');
     if (error) { loadErrs.push(TABLE[k] + ': ' + error.message); D[k] = []; } else D[k] = data || [];
   }));
+  if(typeof transportLoad==='function') await transportLoad();
   if((tab==='dashboard' || location.pathname.endsWith('/client.html')) && typeof loadDashboardPrefs === 'function') await loadDashboardPrefs();
 }
 async function run(p, ok){
@@ -114,13 +115,13 @@ function renderRecovery(){
 const pendReqs = () => D.reqs.filter(r => r.status === 'pending').length;
 const pendUsers = () => D.profiles.filter(p => !p.approved).length;
 function tabsFor(){
-  const t = [['dashboard','Dashboard'], ['appointments','Calendar'], ['requests','Requests', isCoord() ? pendReqs() : 0]];
-  if (isCoord()) t.push(['clients','Clients'], ['people','People', pendUsers()], ['companies','Companies']);
+  const t = [['dashboard','Dashboard'],['clients','Clients'],['equipment','Equipment'],['employees','Employees']];
   return t;
 }
 function render(){
   if (!me) return;
-  if (!tabsFor().some(t => t[0] === tab)) tab = 'dashboard';
+  if (!tabsFor().some(t => t[0] === tab) && !['transportAppointment'].includes(tab)) tab = 'dashboard';
+  if(tab==='equipment') equipmentSelected=new URLSearchParams(location.search).get('id');
   const pr = pendReqs(), pu = pendUsers();
   app.innerHTML = `<header class="top"><div class="who">
     ${me.role === 'admin' ? `<label class="as">View as <select data-viewas>${D.profiles.map(p => `<option value="${esc(p.id)}"${p.id===view.id?' selected':''}>${esc(pname(p))} (${ROLE_LABEL[p.role]||p.role})</option>`).join('')}</select></label>` : ''}
@@ -128,7 +129,7 @@ function render(){
     <button class="ghost sm" data-act="signout">Sign out</button></div></header>
     ${isCoord() && (pr || pu) ? `<div class="banner">${pr ? `<button class="link" data-tab="requests"><strong>${pr} request${pr>1?'s':''} to review</strong></button>` : ''}${pu ? `<button class="link" data-tab="people"><strong>${pu} ${pu>1?'people':'person'} waiting for approval</strong></button>` : ''}</div>` : ''}
     <nav class="tabs" aria-label="Sections">${tabsFor().map(([k,l,c]) => `<a href="./${TAB_PATH[k]}"${k===tab?' aria-current="page"':''}>${l}${c ? `<span class="count">${c}</span>` : ''}</a>`).join('')}</nav>
-    <main>${loadErrs.length ? `<div class="errbox">Some data could not be loaded:<br>${loadErrs.map(esc).join('<br>')}</div>` : ''}${location.pathname.endsWith("/appointment.html") ? viewAppointmentDetail() : {dashboard:viewDashboard, appointments:viewAppts, requests:viewReqs, clients:viewClients, people:viewPeople, companies:viewCompanies}[tab]()}</main>`;
+    <main>${loadErrs.length ? `<div class="errbox">Some data could not be loaded:<br>${loadErrs.map(esc).join('<br>')}</div>` : ''}${location.pathname.endsWith("/appointment.html") ? viewAppointmentDetail() : {transportAppointment:viewTransportAppointment,equipment:viewEquipment,employees:viewEmployees,dashboard:viewDashboard, appointments:viewAppts, requests:viewReqs, clients:viewClients, people:viewPeople, companies:viewCompanies}[tab]()}</main>`;
 }
 
 /* ----- which clients can the current view see? ----- */
