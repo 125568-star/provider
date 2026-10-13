@@ -6,6 +6,16 @@ async function transportLoad(){
   await Promise.all(sets.map(async ([key,table])=>{const {data,error}=await sb.from(table).select('*');transport[key]=error?[]:(data||[]);if(error)loadErrs.push(table+': '+error.message);}));
 }
 const equipmentName=id=>transport.equipment.find(e=>e.id===id)?.name||'—';
+const EQUIPMENT_IMAGE_STYLES=['van-1','van-2','van-3'];
+function equipmentAvatar(equipment){
+  const style=EQUIPMENT_IMAGE_STYLES.includes(equipment?.image_style)?equipment.image_style:'van-1';
+  return '<img class="client-avatar equipment-avatar" src="./assets/'+style+'.svg" alt="Illustration of '+esc(equipment?.name||'equipment')+'" loading="lazy">';
+}
+function equipmentIdentity(equipment){
+  return '<span class="client-identity equipment-identity">'+equipmentAvatar(equipment)+
+    '<a class="link" href="./equipment.html?id='+encodeURIComponent(equipment.id)+'"><strong>'+esc(equipment.name)+'</strong></a></span>';
+}
+
 const employeeName=id=>transport.employees.find(e=>e.id===id)?.full_name||'Unassigned';
 const transportEmployeeLink=id=>{const employee=transport.employees.find(e=>e.id===id);return employee&&typeof employeeIdentity==='function'?employeeIdentity(employee):esc(employeeName(id));};
 const tripClients=id=>transport.passengers.filter(p=>p.trip_id===id).map(p=>D.clientRecords.find(c=>c.id===p.client_id)).filter(Boolean);
@@ -33,19 +43,53 @@ const passengerInputs=(selected,tripId)=>{
  }).join('');
 };
 function transportHeader(title,button){return '<div class="bar"><h2>'+esc(title)+'</h2>'+(button||'')+'</div>';}
+
 function viewEquipment(){
  if(equipmentSelected){
-  const e=transport.equipment.find(e=>e.id===equipmentSelected);
+  const e=transport.equipment.find(item=>item.id===equipmentSelected);
   if(!e){equipmentSelected=null;return viewEquipment();}
   const trips=transport.trips.filter(t=>t.equipment_id===e.id).sort((a,b)=>(a.trip_date+' '+(a.trip_time||'')).localeCompare(b.trip_date+' '+(b.trip_time||'')));
-  return transportHeader(e.name,'<button class="ghost sm" data-act="equipment-back">Back to Equipment</button>')+
-   '<div class="card"><p><strong>Registration:</strong> '+esc(e.registration||'—')+' · <strong>Capacity:</strong> '+esc(e.capacity)+' passengers</p><p>'+esc(e.description||'')+'</p><button class="ghost sm" data-act="edit-equipment" data-id="'+esc(e.id)+'">Edit equipment</button></div>'+
-   transportHeader('Transport appointments','<button class="primary" data-act="new-trip" data-equipment="'+esc(e.id)+'">Add appointment</button>')+
-   (trips.length?'<div class="scroll"><table><thead><tr><th>Date</th><th>Time</th><th>Appointment</th><th>Driver</th><th>Clients</th><th></th></tr></thead><tbody>'+trips.map(t=>'<tr><td>'+esc(t.trip_date)+'</td><td>'+esc(t.trip_time?.slice(0,5)||'—')+'</td><td><a class="link" href="./transport-appointment.html?id='+encodeURIComponent(t.id)+'">'+esc(t.title)+'</a></td><td>'+transportEmployeeLink(t.employee_id)+'</td><td>'+tripClients(t.id).map(c=>transportPassengerLabel(t,c)).join('<hr>')+'</td><td><button class="ghost sm" data-act="edit-trip" data-id="'+esc(t.id)+'">Edit</button></td></tr>').join('')+'</tbody></table></div>':'<div class="empty">No appointments for this equipment yet.</div>');
+  const rows=trips.map(t=>{
+    const href='./transport-appointment.html?id='+encodeURIComponent(t.id);
+    const clients=tripClients(t.id).map(c=>
+      '<div class="equipment-passenger">'+clientAvatar(c)+'<span><a href="./client.html?id='+encodeURIComponent(c.id)+'">'+esc(c.full_name)+'</a>'+
+      (appointmentForPassenger(t.id,c.id)?'<small>'+esc(appointmentForPassenger(t.id,c.id).title)+'</small>':'')+'</span></div>'
+    ).join('');
+    return '<tr class="record-row" role="link" tabindex="0" data-row-href="'+href+'" aria-label="Open '+esc(t.title)+' transport appointment">'+
+      '<td>'+esc(fmtDate(t.trip_date))+'</td>'+
+      '<td>'+esc(t.trip_time?.slice(0,5)||'—')+'</td>'+
+      '<td><a class="link" href="'+href+'"><strong>'+esc(t.title)+'</strong></a></td>'+
+      '<td>'+transportEmployeeLink(t.employee_id)+'</td>'+
+      '<td>'+(clients||'—')+'</td>'+
+      '<td class="act"><button class="ghost sm" data-act="edit-trip" data-id="'+esc(t.id)+'">Edit</button></td></tr>';
+  }).join('');
+  return transportHeader('Equipment details','<a class="ghost sm" href="./equipment.html">Back to Equipment</a>')+
+    '<section class="client-profile-heading equipment-profile-heading">'+equipmentAvatar(e)+
+    '<div><h3>'+esc(e.name)+'</h3><p class="hint">Registration: '+esc(e.registration||'—')+' · '+esc(e.capacity)+' passenger seats</p>'+
+    (e.description?'<p class="hint">'+esc(e.description)+'</p>':'')+'</div>'+
+    (isCoord()?'<button class="ghost sm" data-act="edit-equipment" data-id="'+esc(e.id)+'">Edit details</button>':'')+
+    '</section>'+
+    transportHeader('Appointments / Trips',isCoord()?'<button class="primary" data-act="new-trip" data-equipment="'+esc(e.id)+'">Add appointment</button>':'')+
+    (rows?'<div class="scroll"><table class="equipment-appointments-table"><thead><tr><th>Date</th><th>Time</th><th>Appointment</th><th>Employee</th><th>Clients</th><th></th></tr></thead><tbody>'+rows+'</tbody></table></div>':
+      '<div class="empty">No appointments for this equipment yet.</div>');
  }
- return transportHeader('Equipment','<button class="primary" data-act="new-equipment">Add equipment</button>')+
- '<div class="scroll"><table><thead><tr><th>Equipment</th><th>Registration</th><th>Seats</th><th>Appointments</th><th></th></tr></thead><tbody>'+transport.equipment.map(e=>'<tr><td><a class="link" href="./equipment.html?id='+encodeURIComponent(e.id)+'"><strong>🚐 '+esc(e.name)+'</strong></a></td><td>'+esc(e.registration||'—')+'</td><td>'+esc(e.capacity)+'</td><td>'+transport.trips.filter(t=>t.equipment_id===e.id).length+'</td><td><button class="ghost sm" data-act="edit-equipment" data-id="'+esc(e.id)+'">Edit</button></td></tr>').join('')+'</tbody></table></div>';
+ const equipment=[...transport.equipment].sort((a,b)=>a.name.localeCompare(b.name,undefined,{numeric:true}));
+ const rows=equipment.map(e=>{
+  const href='./equipment.html?id='+encodeURIComponent(e.id);
+  const assigned=transport.trips.filter(t=>t.equipment_id===e.id);
+  return '<tr class="record-row" role="link" tabindex="0" data-row-href="'+href+'" aria-label="Open '+esc(e.name)+' equipment">'+
+    '<td>'+equipmentIdentity(e)+'</td>'+
+    '<td>'+esc(e.registration||'—')+'</td>'+
+    '<td>'+esc(e.capacity)+'</td>'+
+    '<td>'+assigned.length+'</td>'+
+    '<td class="act"><a class="ghost sm" href="'+href+'">Open</a></td></tr>';
+ }).join('');
+ return transportHeader('Equipment',isCoord()?'<button class="primary" data-act="new-equipment">Add equipment</button>':'')+
+  '<p class="hint equipment-directory-hint">Select equipment to view its profile, employee assignments, passengers and appointments.</p>'+
+  (rows?'<div class="scroll"><table class="equipment-directory-table"><thead><tr><th>Equipment</th><th>Registration</th><th>Seats</th><th>Appointments</th><th></th></tr></thead><tbody>'+rows+'</tbody></table></div>':
+    '<div class="empty">No equipment yet. Select Add equipment to get started.</div>');
 }
+
 function viewEmployees(){
  return transportHeader('Employees / Drivers','<button class="primary" data-act="new-employee">Add employee</button>')+
  '<div class="scroll"><table><thead><tr><th>Employee</th><th>Phone</th><th>Email</th><th>Assigned trips</th><th></th></tr></thead><tbody>'+transport.employees.map(e=>'<tr><td><strong>'+esc(e.full_name)+'</strong></td><td>'+esc(e.phone||'—')+'</td><td>'+esc(e.email||'—')+'</td><td>'+transport.trips.filter(t=>t.employee_id===e.id).length+'</td><td><button class="ghost sm" data-act="edit-employee" data-id="'+esc(e.id)+'">Edit</button></td></tr>').join('')+'</tbody></table></div>';
@@ -61,12 +105,27 @@ async function transportSave(table,payload,id){
  const {data,error}=await query;if(error||!data?.length){toast(error?.message||'Save failed',true);return null;}
  await loadAll();render();toast('Saved.');return data[0];
 }
+
 function editEquipment(id){
  const e=transport.equipment.find(e=>e.id===id);
+ if(!isCoord())return toast('Only authorised staff can manage equipment.',true);
+ const selected=EQUIPMENT_IMAGE_STYLES.includes(e?.image_style)?e.image_style:'van-1';
+ const imageOptions=EQUIPMENT_IMAGE_STYLES.map((value,index)=>
+   '<label class="employee-avatar-option"><input type="radio" name="image_style" value="'+value+'"'+(selected===value?' checked':'')+'>'+
+   '<img src="./assets/'+value+'.svg" alt="Equipment picture '+(index+1)+'"><span>Picture '+(index+1)+'</span></label>').join('');
  openDlg(e?'Edit equipment':'Add equipment',
- '<label>Name<input name="name" required maxlength="150" value="'+esc(e?.name||'')+'"></label><label>Registration<input name="registration" maxlength="40" value="'+esc(e?.registration||'')+'"></label><label>Passenger capacity<input name="capacity" type="number" min="1" max="100" required value="'+esc(e?.capacity||12)+'"></label><label>Description<textarea name="description">'+esc(e?.description||'')+'</textarea></label>',
- async f=>!!(await transportSave('provider_equipment',{name:f.name,registration:f.registration,capacity:Number(f.capacity),description:f.description},id)));
+ '<div><h3>Equipment picture</h3><p class="hint">Choose a picture for the equipment list and profile.</p><div class="employee-avatar-options">'+imageOptions+'</div></div>'+
+ '<label>Name<input name="name" required maxlength="150" value="'+esc(e?.name||'')+'"></label>'+
+ '<label>Registration<input name="registration" maxlength="40" value="'+esc(e?.registration||'')+'"></label>'+
+ '<label>Passenger capacity<input name="capacity" type="number" min="1" max="100" required value="'+esc(e?.capacity||12)+'"></label>'+
+ '<label>Description<textarea name="description">'+esc(e?.description||'')+'</textarea></label>',
+ async f=>!!(await transportSave('provider_equipment',{
+   name:String(f.name||'').trim(),registration:String(f.registration||'').trim(),
+   capacity:Number(f.capacity),description:String(f.description||'').trim(),
+   image_style:EQUIPMENT_IMAGE_STYLES.includes(f.image_style)?f.image_style:'van-1'
+ },id)));
 }
+
 function editEmployee(id){
  const e=transport.employees.find(e=>e.id===id);
  openDlg(e?'Edit employee':'Add employee',
