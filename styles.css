@@ -293,3 +293,37 @@ nav.tabs > a{display:inline-flex}
   .employee-avatar-option img{width:58px;height:58px}
   .employee-avatar-option span{font-size:.75rem}
 }
+
+
+/* Interactive records: same portrait-first rows and click highlighting across the Provider site. */
+.record-row {cursor:pointer}
+.record-row > td {transition:background-color .14s ease;vertical-align:middle}
+.record-row:hover > td,
+.record-row:focus-visible > td,
+.record-row:focus-within > td {background:var(--off-bg)}
+.record-row:active > td {background:var(--off-bg)}
+.record-row:focus-visible {outline:3px solid var(--blue);outline-offset:-3px}
+.record-row a:not(.ghost) {text-underline-offset:3px}
+.equipment-directory-hint{margin:0 0 15px}
+.equipment-directory-table{min-width:620px}
+.equipment-directory-table .client-avatar,
+.employee-directory-table .client-avatar {width:48px;height:48px}
+.equipment-directory-table .client-identity,
+.employee-directory-table .client-identity {gap:12px}
+.equipment-directory-table .client-identity strong,
+.employee-directory-table .client-identity strong {font-size:1rem;color:var(--blue)}
+.equipment-profile-heading .equipment-avatar {width:80px;height:80px}
+.equipment-profile-heading .ghost {margin-left:auto}
+.equipment-profile-heading .hint {margin-top:4px}
+.equipment-appointments-table {min-width:820px}
+.equipment-appointments-table .employee-avatar {width:40px;height:40px}
+.equipment-appointments-table .employee-identity {gap:9px}
+.equipment-passenger {display:flex;align-items:center;gap:9px;margin:4px 0}
+.equipment-passenger .client-avatar {width:38px;height:38px}
+.equipment-passenger small {display:block;color:var(--muted)}
+.equipment-appointments-table .record-row > td {vertical-align:middle}
+@media(max-width:640px){
+  .equipment-profile-heading .equipment-avatar {width:68px;height:68px}
+  .equipment-directory-table td,.employee-directory-table td {padding:11px 10px}
+  .equipment-directory-table .client-avatar,.employee-directory-table .client-avatar {width:44px;height:44px}
+}
