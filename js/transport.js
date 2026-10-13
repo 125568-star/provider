@@ -8,6 +8,15 @@ async function transportLoad(){
 const equipmentName=id=>transport.equipment.find(e=>e.id===id)?.name||'—';
 const employeeName=id=>transport.employees.find(e=>e.id===id)?.full_name||'Unassigned';
 const tripClients=id=>transport.passengers.filter(p=>p.trip_id===id).map(p=>D.clientRecords.find(c=>c.id===p.client_id)).filter(Boolean);
+function appointmentTransportSummary(appointmentId){
+ const links=transport.passengers.filter(x=>x.appointment_id===appointmentId);
+ if(!links.length)return '<span class="hint">Not assigned</span>';
+ return links.map(link=>{
+  const trip=transport.trips.find(t=>t.id===link.trip_id);if(!trip)return '';
+  return '<a href="./transport-appointment.html?id='+encodeURIComponent(trip.id)+'">'+esc(equipmentName(trip.equipment_id))+'</a> · '+esc(employeeName(trip.employee_id));
+ }).join('<hr>');
+}
+
 const driverOpts=id=>'<option value="">Unassigned</option>'+transport.employees.map(e=>'<option value="'+esc(e.id)+'"'+(e.id===id?' selected':'')+'>'+esc(e.full_name)+'</option>').join('');
 const equipOpts=id=>transport.equipment.map(e=>'<option value="'+esc(e.id)+'"'+(e.id===id?' selected':'')+'>'+esc(e.name)+'</option>').join('');
 const appointmentForPassenger=(tripId,clientId)=>{const link=transport.passengers.find(p=>p.trip_id===tripId&&p.client_id===clientId);return D.recordAppts.find(a=>a.id===link?.appointment_id)||null;};
