@@ -122,6 +122,7 @@ function viewClientProfile(){
     <td>${esc(dateLabel(a.appt_date))}</td><td>${esc(clientAppointmentTime(a.appt_time))}</td>
     <td><strong>${esc(a.title)}</strong>${a.notes?'<small>'+esc(a.notes)+'</small>':''}</td>
     <td>${a.is_example?'<span class="chip pending">Example</span>':'<span class="chip approved">Scheduled</span>'}</td>
+    <td>${typeof appointmentTransportSummary==="function"?appointmentTransportSummary(a.id):"—"}</td>
   </tr>`).join('');
   return `<div class="bar"><h2>Client details</h2><a href="./clients.html" class="ghost sm client-open">Back to Clients</a></div>
   <section class="client-profile-heading">${clientAvatar(client)}<div><h3>${esc(client.full_name)}</h3><p class="hint">Coordinator: ${esc(coordinatorName(client))}</p></div>
@@ -135,7 +136,7 @@ function viewClientProfile(){
        ${activeDate?'<button type="button" class="ghost sm" data-client-profile-all-week>All week</button>':''}
        <span class="chip approved">${appointments.length} appointment${appointments.length===1?'':'s'}</span>
       </div></div>
-   ${appointments.length?`<div class="scroll"><table class="client-appointments-table"><thead><tr><th>Date</th><th>Time</th><th>Appointment</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></div>`:'<div class="empty">No appointments for '+(activeDate?'this day':'this week')+'.</div>'}
+   ${appointments.length?`<div class="scroll"><table class="client-appointments-table"><thead><tr><th>Date</th><th>Time</th><th>Appointment</th><th>Status</th><th>Transport</th></tr></thead><tbody>${rows}</tbody></table></div>`:'<div class="empty">No appointments for '+(activeDate?'this day':'this week')+'.</div>'}
   </section>`;
 }
 
