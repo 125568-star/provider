@@ -17,7 +17,7 @@ function employeeDirectory() {
     const assigned = transport.trips.filter(t=>t.employee_id===employee.id);
     const next = assigned.filter(t=>t.trip_date>=todayStr()).sort((a,b)=>(a.trip_date+' '+(a.trip_time||'')).localeCompare(b.trip_date+' '+(b.trip_time||'')))[0];
     const upcoming = next ? '<a href="./transport-appointment.html?id='+encodeURIComponent(next.id)+'">'+esc(next.trip_date+' · '+equipmentName(next.equipment_id))+'</a>' : '—';
-    return '<tr><td>'+employeeIdentity(employee)+'</td>'+
+    return '<tr class="record-row" role="link" tabindex="0" data-row-href="./employee.html?id='+encodeURIComponent(employee.id)+'" aria-label="Open '+esc(employee.full_name)+' employee profile"><td>'+employeeIdentity(employee)+'</td>'+
       '<td>'+esc(employee.phone||employee.email||'—')+'</td>'+
       '<td>'+upcoming+'</td><td>'+assigned.length+'</td>'+
       '<td class="act"><a class="ghost sm" href="./employee.html?id='+encodeURIComponent(employee.id)+'">Open</a></td></tr>';
@@ -98,8 +98,8 @@ function employeeProfile() {
         (ap?'<small><a href="./appointment.html?kind=record&amp;id='+encodeURIComponent(ap.id)+'&amp;from=client">'+esc(ap.title)+'</a></small>':'<small>No linked appointment</small>')+
         '</span></div>';
     }).join('');
-    return '<tr class="client-appointment-row employee-appointment-row" role="link" tabindex="0"'+
-      ' data-employee-trip-href="./transport-appointment.html?id='+encodeURIComponent(t.id)+'">'+
+    return '<tr class="client-appointment-row employee-appointment-row record-row" role="link" tabindex="0"'+
+      ' data-row-href="./transport-appointment.html?id='+encodeURIComponent(t.id)+'" aria-label="Open '+esc(t.title)+' transport appointment">'+
       '<td>'+esc(dateLabel(t.trip_date))+'</td><td>'+esc(clientAppointmentTime(t.trip_time))+'</td>'+
       '<td><strong>'+esc(t.title)+'</strong></td>'+
       '<td><a href="./equipment.html?id='+encodeURIComponent(t.equipment_id)+'">'+esc(equipmentName(t.equipment_id))+'</a></td>'+
@@ -201,15 +201,5 @@ document.addEventListener('click',event=>{
     history.replaceState(null,'',url.pathname+url.search+url.hash);
     render();
     return;
-  }
-  const row=event.target.closest('[data-employee-trip-href]');
-  if(row&&!event.target.closest('a,button'))location.assign(row.dataset.employeeTripHref);
-});
-
-document.addEventListener('keydown',event=>{
-  if(!location.pathname.endsWith('/employee.html'))return;
-  const row=event.target.closest('[data-employee-trip-href]');
-  if(row&&(event.key==='Enter'||event.key===' ')){
-    event.preventDefault();location.assign(row.dataset.employeeTripHref);
   }
 });
