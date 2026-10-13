@@ -31,6 +31,18 @@ function viewAppointmentDetail(){
   const clientLink=fromDirectory&&client ?
     '<a class="ghost sm client-open" href="./client.html?id='+encodeURIComponent(client.id)+
     '&date='+encodeURIComponent(a.appt_date)+'">Client schedule</a>' : '';
+  const transportMatches=fromDirectory && typeof transport!=='undefined'
+    ? transport.passengers.filter(p=>p.appointment_id===a.id).map(link=>transport.trips.find(t=>t.id===link.trip_id)).filter(Boolean)
+    : [];
+  const driverFields=transportMatches.map(t=>{
+    const employee=transport.employees.find(e=>e.id===t.employee_id);
+    const employeeBlock=employee&&typeof employeeAvatar==='function'
+      ? '<div class="employee-passenger">'+employeeAvatar(employee)+'<span><a href="./employee.html?id='+encodeURIComponent(employee.id)+'">'+esc(employee.full_name)+'</a></span></div>'
+      : '<span class="hint">No driver assigned</span>';
+    return '<div class="appointment-detail-field"><small>Transport / Driver</small>'+
+      '<strong><a href="./equipment.html?id='+encodeURIComponent(t.equipment_id)+'">'+esc(equipmentName(t.equipment_id))+'</a></strong>'+
+      employeeBlock+'<a href="./transport-appointment.html?id='+encodeURIComponent(t.id)+'">View transport assignment</a></div>';
+  }).join('');
   const note=typeof a.notes==='string'&&a.notes.trim()
     ? a.notes.trim() : 'No additional information has been recorded for this appointment yet.';
   return '<div class="bar"><h2>Appointment details</h2>'+
@@ -44,7 +56,7 @@ function viewAppointmentDetail(){
       '<div class="appointment-detail-fields">'+
         '<div class="appointment-detail-field"><small>Date</small><strong>'+esc(readableDate)+'</strong></div>'+
         '<div class="appointment-detail-field"><small>Time</small><strong>'+esc(time)+'</strong></div>'+
-        '<div class="appointment-detail-field"><small>Client</small><strong>'+esc(clientName)+'</strong></div>'+
+        '<div class="appointment-detail-field"><small>Client</small><strong>'+esc(clientName)+'</strong></div>'+driverFields+
       '</div>'+
       '<div class="appointment-detail-description"><h4>About this appointment</h4><p>'+esc(note)+'</p></div>'+
       '<div class="appointment-detail-links">'+clientLink+'</div>'+
