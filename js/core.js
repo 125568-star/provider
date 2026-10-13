@@ -115,7 +115,7 @@ function renderRecovery(){
 const pendReqs = () => D.reqs.filter(r => r.status === 'pending').length;
 const pendUsers = () => D.profiles.filter(p => !p.approved).length;
 function tabsFor(){
-  const t = [['dashboard','Dashboard'],['clients','Clients'],['equipment','Equipment'],['employees','Employees']];
+  const t = [['dashboard','Dashboard'],['employees','Employees'],['equipment','Equipment'],['clients','Clients']];
   return t;
 }
 function render(){
