@@ -1,0 +1,263 @@
+
+:root{--navy:#0f2a5c;--blue:#1f56b8;--blue-hover:#1a4a9f;--magenta:#c8236f;--paper:#f4f6fb;--ink:#16213a;--muted:#59647f;--line:#dbe1ee;--white:#fff;--red:#b3261e;--radius:10px;--field-line:#b9c3da;--thead:#fafbfe;--dash:rgba(200,35,111,.4);--banner-bg:#fff3f8;--banner-line:#f1c3d8;--pend-bg:#fff1cf;--pend-fg:#76510a;--ok-bg:#dcf4e4;--ok-fg:#14633a;--off-bg:#eceff5;--off-fg:#4a5470;--toast-bg:#0f2a5c;--toast-fg:#fff;color-scheme:light}
+:root[data-theme="dark"]{--navy:#d3e0ff;--blue:#3a72d8;--blue-hover:#2f63c4;--magenta:#ff6fae;--paper:#0d1424;--ink:#e8ecf7;--muted:#9eaacb;--line:#2a3658;--white:#16203a;--red:#ff8a80;--field-line:#40507a;--thead:#1a2644;--dash:rgba(255,111,174,.45);--banner-bg:#2a1830;--banner-line:#5a2a4c;--pend-bg:#4a3a10;--pend-fg:#ffdc82;--ok-bg:#143d28;--ok-fg:#8fe0ae;--off-bg:#26314f;--off-fg:#b7c2e0;--toast-bg:#d3e0ff;--toast-fg:#0d1424;color-scheme:dark}
+*{box-sizing:border-box}[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;background:var(--paper);color:var(--ink);font:17px/1.5 "Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+#app{flex:1}
+.themefooter{display:flex;align-items:center;justify-content:center;gap:24px;padding:20px 16px 24px;text-align:center;font-size:.8rem}
+.themefooter button{border:0;background:none;color:var(--muted);padding:4px 2px;text-decoration:underline;text-underline-offset:4px;cursor:pointer}
+.themefooter button[aria-pressed="true"]{color:var(--ink);font-weight:700;text-decoration-thickness:2px}
+.themefooter button:hover{color:var(--blue)}
+.client-form{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:22px;max-width:900px;margin-top:16px}
+.client-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.client-actions{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-top:10px}
+.client-notes{width:100%}
+.client-form .hint{font-size:.9rem}
+h1,h2,h3,p{margin:0}button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--magenta);outline-offset:2px}
+.brand{display:flex;align-items:center;gap:14px}.brand svg{flex:none}
+.brand h1{font-size:1.55rem;line-height:1.1;color:var(--navy);letter-spacing:-.01em}
+.brand .tag{color:var(--magenta);font-size:.95rem;margin-top:2px}.brand.big h1{font-size:2rem}
+.top{background:var(--white);border-bottom:3px solid var(--dash);padding:12px 24px;display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:flex-end;font-size:.8rem}
+.who{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.me{display:flex;flex-direction:column;line-height:1.2;text-align:right}.me small{color:var(--muted)}
+.as{display:flex;align-items:center;gap:8px;color:var(--muted)}.as select{min-width:200px;font-size:inherit}.top .ghost.sm{font-size:inherit}
+.themesel{width:auto}
+.banner{background:var(--banner-bg);border-bottom:1px solid var(--banner-line);padding:10px 24px;display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center}
+.tabs{display:flex;gap:4px;padding:0 24px;background:var(--white);border-bottom:1px solid var(--line);overflow-x:auto}
+.tabs a{background:none;border:0;border-bottom:4px solid transparent;padding:14px 14px 10px;cursor:pointer;color:var(--muted);font-weight:700;white-space:nowrap}
+.tabs a[aria-current="page"]{color:var(--navy);border-bottom-color:var(--blue)}
+.tabs .count{display:inline-block;min-width:22px;padding:0 6px;margin-left:6px;border-radius:11px;background:var(--magenta);color:var(--paper);font-size:.8rem;text-align:center}
+main{max-width:1180px;margin:0 auto;padding:24px}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin:8px 0 14px}
+.bar h2{font-size:1.3rem;color:var(--navy)}
+h3.sub{font-size:1.05rem;color:var(--muted);margin:28px 0 10px}
+.hint{color:var(--muted)}
+.empty{background:var(--white);border:1px dashed var(--line);border-radius:var(--radius);padding:28px;text-align:center;color:var(--muted)}
+.scroll{overflow-x:auto;background:var(--white);border:1px solid var(--line);border-radius:var(--radius)}
+table{width:100%;border-collapse:collapse;min-width:680px}
+th,td{padding:12px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+th{font-size:.9rem;color:var(--muted);font-weight:700;background:var(--thead)}
+tr:last-child td{border-bottom:0}td.act{text-align:right;white-space:nowrap}td small{display:block;color:var(--muted)}
+button{cursor:pointer}
+.primary{background:var(--blue);color:#fff;border:0;border-radius:8px;padding:10px 18px;font-weight:700}
+.primary:hover{background:var(--blue-hover)}.primary:disabled{opacity:.6;cursor:wait}
+.ghost{background:var(--white);border:1px solid var(--line);border-radius:8px;padding:9px 14px;font-weight:700;color:var(--navy)}
+.ghost:hover{border-color:var(--blue)}.ghost.sm,.primary.sm{padding:5px 10px;font-size:.92rem}.ghost.danger{color:var(--red)}
+.link{background:none;border:0;color:var(--blue);text-decoration:underline;padding:4px 0}
+input,select,textarea{width:100%;background:var(--white);border:1px solid var(--field-line);border-radius:8px;padding:10px 12px}
+input[type=checkbox]{width:auto}
+textarea{min-height:84px;resize:vertical}
+label{display:grid;gap:5px;font-weight:700}
+label.check{display:flex;gap:8px;align-items:center;font-weight:400;color:var(--muted);font-size:.92rem}
+.stack{display:grid;gap:14px}.msg{color:var(--red);min-height:1.2em;font-weight:700}
+.links{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px}
+.chip{display:inline-block;padding:2px 10px;border-radius:12px;font-size:.88rem;font-weight:700}
+.chip.pending{background:var(--pend-bg);color:var(--pend-fg)}.chip.approved{background:var(--ok-bg);color:var(--ok-fg)}.chip.declined{background:var(--off-bg);color:var(--off-fg)}
+.prov{display:flex;gap:6px;align-items:center;margin-bottom:4px}
+.errbox{background:var(--banner-bg);border:1px solid var(--banner-line);border-radius:var(--radius);padding:12px 16px;margin-bottom:16px;color:var(--red);font-weight:700}
+.authwrap{min-height:100vh;display:grid;place-items:center;padding:24px;position:relative}
+.themecorner{position:absolute;top:16px;right:16px}
+.card{background:var(--white);border:1px solid var(--line);border-radius:14px;padding:28px}
+.auth{width:100%;max-width:460px;display:grid;gap:18px}.auth h2{font-size:1.3rem;color:var(--navy)}
+dialog{background:var(--white);color:var(--ink);border:0;border-radius:14px;padding:26px;width:min(520px,92vw);box-shadow:0 20px 60px rgba(15,42,92,.3)}
+dialog::backdrop{background:rgba(15,42,92,.45)}
+dialog h2{font-size:1.25rem;color:var(--navy);margin-bottom:14px}
+.row-end{display:flex;gap:10px;justify-content:flex-end;margin-top:6px}
+#toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,20px);background:var(--toast-bg);color:var(--toast-fg);padding:12px 18px;border-radius:10px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;max-width:92vw;z-index:50}
+#toast.show{opacity:1;transform:translate(-50%,0)}#toast.err{background:#b3261e;color:#fff}
+@media (max-width:640px){.top{padding:12px 16px}.tabs{padding:0 12px}.banner{padding:10px 16px}main{padding:16px}.me{text-align:left}.brand h1{font-size:1.3rem}}
+@media (prefers-reduced-motion:reduce){#toast{transition:none}}
+
+.tabs a{text-decoration:none;display:inline-flex;align-items:center}
+.client-identity{display:flex;align-items:center;gap:10px}
+.client-avatar{display:inline-flex;width:48px;height:48px;flex:none;border-radius:50%;object-fit:cover;background:var(--off-bg);border:1px solid var(--line)}
+.client-initials{align-items:center;justify-content:center;font-weight:700;color:var(--navy)}
+
+
+/* Dashboard: Brisbane & Queensland events */
+.dash-section{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:22px}
+.dash-heading{display:flex;justify-content:space-between;align-items:start;gap:12px;margin-bottom:22px}
+.dash-heading h3{font-size:1.25rem;color:var(--navy)}
+.dash-heading .hint{margin-top:4px}
+.dash-location{border:1px solid var(--line);border-radius:20px;padding:5px 11px;font-size:.8rem;color:var(--muted);white-space:nowrap}
+.dash-calendar-layout{display:grid;grid-template-columns:minmax(225px,330px) minmax(0,1fr);gap:30px}
+.dash-calendar-layout h4{margin:0 0 12px;font-size:1rem;color:var(--navy)}
+.dash-month-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;text-align:center}
+.dash-weekday{font-size:.75rem;color:var(--muted);padding:5px 0}
+.dash-day{min-height:39px;position:relative;display:grid;place-items:center;border-radius:7px;font-size:.91rem}
+.dash-day.dash-has-event{background:var(--off-bg);font-weight:700;color:var(--navy)}
+.dash-day.dash-today{outline:2px solid var(--blue);outline-offset:-2px}
+.dash-day i{position:absolute;bottom:3px;width:4px;height:4px;border-radius:50%;background:var(--magenta)}
+.dash-event-list{list-style:none;padding:0;margin:0;display:grid;gap:0}
+.dash-event{display:flex;gap:15px;padding:11px 0;border-bottom:1px solid var(--line)}
+.dash-event:first-child{padding-top:0}
+.dash-event:last-child{border-bottom:0}
+.dash-date{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:53px;align-self:flex-start;border:1px solid var(--line);border-radius:8px;padding:6px;background:var(--paper)}
+.dash-date strong{font-size:1.3rem;line-height:1.2}
+.dash-date small{font-size:.75rem;color:var(--muted)}
+.dash-event-text{display:grid;gap:3px}
+.dash-event-text strong{line-height:1.3}
+.dash-event-text p{font-size:.87rem;color:var(--muted)}
+.dash-event-text a{font-size:.83rem;color:var(--blue);text-underline-offset:2px;justify-self:start}
+.dash-category{font-size:.73rem;color:var(--muted);letter-spacing:.02em}
+.dash-past .dash-date{opacity:.65}
+.dash-source-note{font-size:.77rem;color:var(--muted);margin-top:16px}
+.dash-source-links{display:flex;gap:18px;flex-wrap:wrap;margin-top:12px;font-size:.83rem}
+.dash-source-links a{color:var(--blue)}
+.dash-no-events{padding:16px;color:var(--muted);background:var(--paper);border-radius:8px}
+@media(max-width:700px){.dash-calendar-layout{grid-template-columns:1fr}.dash-heading{flex-wrap:wrap}.dash-section{padding:16px}}
+
+/* Dashboard inner navigation and account-based location */
+.dash-inner-tabs{display:flex;gap:18px;border-bottom:1px solid var(--line);margin:-5px 0 22px}
+.dash-inner-tabs button{background:none;border:0;border-bottom:3px solid transparent;padding:9px 12px 10px;color:var(--muted);font-weight:700}
+.dash-inner-tabs button[aria-selected="true"]{color:var(--navy);border-bottom-color:var(--blue)}
+button.dash-location{background:var(--white);cursor:pointer;color:var(--blue)}
+.dash-location-form{display:flex;gap:8px;align-items:end;flex-wrap:wrap}
+.dash-location-form label{font-size:.8rem;min-width:130px}
+.dash-location-form input,.dash-location-form select{padding:5px 9px;font-size:.9rem}
+@media(max-width:700px){.dash-location-form{width:100%}.dash-location-form label{flex:1}}
+
+/* Individual client page and selected current week */
+a.client-open{display:inline-flex;align-items:center;text-decoration:none}
+.client-profile-heading{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin:12px 0 24px;padding:20px;background:var(--white);border:1px solid var(--line);border-radius:var(--radius)}
+.client-profile-heading .client-avatar{width:68px;height:68px}
+.client-profile-heading h3{font-size:1.35rem;color:var(--navy)}
+.client-profile-heading .ghost{margin-left:auto}
+.client-week-card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:22px}
+.client-week-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.client-week-heading h3,.client-appointments-heading h3{font-size:1.12rem;color:var(--navy)}
+.client-week-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.client-week-day{display:flex;align-items:center;flex-direction:column;justify-content:center;gap:3px;min-width:0;border:1px solid var(--line);border-radius:9px;background:var(--paper);padding:10px 3px}
+.client-week-day small{font-size:.79rem;color:var(--muted)}
+.client-week-day strong{font-size:1.2rem}
+.client-week-day.client-week-today{border:2px solid var(--blue);background:var(--off-bg)}
+.client-week-count{font-size:.68rem;color:var(--muted);white-space:nowrap}
+.client-appointments-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:26px 0 12px}
+.client-appointments-table{min-width:560px}
+@media(max-width:600px){.client-week-card{padding:14px}.client-week-grid{gap:3px}.client-week-day{padding:8px 1px}.client-week-day strong{font-size:1rem}.client-week-count{font-size:.57rem}.client-profile-heading .ghost{margin-left:0}}
+
+/* Dashboard > Clients: current Monday–Sunday appointment agenda */
+.dash-week-summary{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.dash-week-summary h4{font-size:1.08rem;color:var(--navy);margin:0}
+.dash-week-summary strong{font-size:.88rem;color:var(--muted)}
+.dash-week-strip{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin:4px 0 24px}
+.dash-week-strip-day{display:flex;align-items:center;flex-direction:column;gap:3px;padding:11px 2px;background:var(--paper);border:1px solid var(--line);border-radius:9px}
+.dash-week-strip-day small{font-size:.75rem;color:var(--muted)}
+.dash-week-strip-day strong{font-size:1.25rem}
+.dash-week-strip-day span{font-size:.68rem;color:var(--muted);white-space:nowrap}
+.dash-week-strip-today{border:2px solid var(--blue);background:var(--off-bg)}
+.dash-weekly-agenda{display:grid;gap:14px}
+.dash-agenda-day{border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.dash-agenda-day.dash-agenda-today{border-color:var(--blue)}
+.dash-agenda-day-head{display:flex;align-items:center;gap:10px;background:var(--paper);padding:10px 14px}
+.dash-agenda-day-head h4{font-size:.99rem;margin:0;color:var(--navy)}
+.dash-agenda-day-head h4 span{font-weight:400;color:var(--muted)}
+.dash-agenda-day-head>small{margin-left:auto;color:var(--muted);font-size:.79rem;white-space:nowrap}
+.dash-agenda-today-label{font-size:.72rem;padding:2px 7px;background:var(--off-bg);color:var(--navy);border-radius:10px;font-weight:700}
+.dash-agenda-appointments{display:grid}
+.dash-agenda-appointment{display:flex;gap:12px;align-items:center;padding:11px 14px;text-decoration:none;color:var(--ink);border-top:1px solid var(--line)}
+.dash-agenda-appointment:hover{background:var(--paper)}
+.dash-agenda-appointment .client-avatar{width:39px;height:39px}
+.dash-agenda-details{display:flex;flex-direction:column;gap:1px;flex:1;min-width:0}
+.dash-agenda-details>strong{color:var(--navy);font-size:.94rem}
+.dash-agenda-details>span{color:var(--muted);font-size:.86rem}
+.dash-agenda-time{font-size:.85rem;white-space:nowrap;color:var(--ink)}
+.dash-example-label{font-size:.77rem;color:var(--muted)}
+.dash-agenda-empty{color:var(--muted);font-size:.86rem;padding:12px 14px}
+@media(max-width:600px){
+ .dash-week-strip{gap:3px}
+ .dash-week-strip-day{padding:9px 1px}
+ .dash-week-strip-day strong{font-size:1rem}
+ .dash-week-strip-day span{font-size:.53rem}
+ .dash-agenda-day-head h4{font-size:.89rem}
+ .dash-agenda-appointment{gap:9px;padding:10px}
+ .dash-agenda-time{font-size:.74rem}
+}
+
+/* All-client weekly appointments use the same table layout as the individual client page. */
+.dash-all-clients-table{min-width:650px}
+.dash-client-table-link{display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:var(--navy)}
+.dash-client-table-link:hover{text-decoration:underline}
+.dash-client-table-link .client-avatar{width:36px;height:36px}
+.dash-all-clients-table td{vertical-align:middle}
+
+
+/* Selected day is shaded; today's date keeps a separate outline, even when not selected. */
+.dash-selectable-day{font:inherit;color:var(--ink);width:100%;cursor:pointer;transition:background-color .12s ease;appearance:none}
+.dash-selectable-day:hover{background:var(--off-bg)}
+.dash-selectable-day.dash-day-selected{background:var(--navy);color:var(--white);border-color:var(--navy)}
+.dash-selectable-day.dash-day-selected small,.dash-selectable-day.dash-day-selected .client-week-count{color:var(--white)}
+.dash-selectable-day.client-week-today{outline:2px solid var(--blue);outline-offset:-2px;border:1px solid var(--line)}
+.dash-selectable-day.dash-day-selected.client-week-today{border-color:var(--navy);outline:2px solid var(--blue);outline-offset:2px}
+.dash-selectable-day:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+
+
+/* General monthly calendar: same day-selection language as Clients */
+.dash-month-grid .dash-calendar-button{appearance:none;border:1px solid transparent;background:transparent;color:var(--ink);font:inherit;line-height:1.25;min-width:0;padding:2px;cursor:pointer}
+.dash-month-grid .dash-calendar-button.dash-has-event{background:var(--off-bg);color:var(--navy)}
+.dash-month-grid .dash-calendar-button:hover{background:var(--off-bg);border-color:var(--blue)}
+.dash-month-grid .dash-calendar-button.dash-day-selected{background:var(--navy);color:var(--white);border-color:var(--navy)}
+.dash-month-grid .dash-calendar-button.dash-day-selected i{background:var(--white)}
+.dash-month-grid .dash-calendar-button.dash-today{outline:2px solid var(--blue);outline-offset:-2px}
+.dash-month-grid .dash-calendar-button.dash-day-selected.dash-today{outline-offset:2px}
+.dash-month-grid .dash-calendar-button:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.dash-events-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.dash-calendar-layout .dash-events-heading h4{margin:0}
+.client-appointment-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+
+
+/* Dashboard Clients: one-click appointment rows; photograph, appointment, time. */
+.dash-all-clients-table{min-width:0;table-layout:auto}
+.dash-all-clients-table td{vertical-align:middle}
+.dash-all-clients-table th:last-child{text-align:right}
+.dash-all-clients-table .dash-appointment-row{cursor:pointer;transition:background-color .12s ease}
+.dash-all-clients-table .dash-appointment-row:hover,
+.dash-all-clients-table .dash-appointment-row:focus-visible{background:var(--paper)}
+.dash-all-clients-table .dash-appointment-row:focus-visible{outline:2px solid var(--blue);outline-offset:-2px}
+.dash-appointment-client{display:flex;align-items:center;gap:12px;white-space:nowrap}
+.dash-appointment-client .client-avatar{width:44px;height:44px}
+.dash-appointment-title{color:var(--navy);font-size:.96rem}
+.dash-appointment-example{display:block;color:var(--muted);font-size:.73rem}
+.dash-all-clients-table td.dash-appointment-time{text-align:right;white-space:nowrap;font-size:.91rem}
+@media(max-width:600px){
+  .dash-all-clients-table td,.dash-all-clients-table th{padding:10px 7px}
+  .dash-appointment-client{gap:7px;white-space:normal}
+  .dash-appointment-client .client-avatar{width:34px;height:34px}
+  .dash-appointment-client strong{font-size:.85rem}
+  .dash-appointment-title{font-size:.85rem}
+  .dash-all-clients-table td.dash-appointment-time{font-size:.79rem}
+}
+
+/* Appointment detail view */
+.appointment-detail-card{display:grid;gap:22px}
+.appointment-detail-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.appointment-detail-head .client-avatar{width:64px;height:64px}
+.appointment-detail-head h3{font-size:1.25rem;color:var(--navy)}
+.appointment-detail-head p{font-size:.9rem;color:var(--muted)}
+.appointment-detail-head .chip{margin-left:auto}
+.appointment-detail-title{font-size:1.38rem;color:var(--navy)}
+.appointment-detail-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.appointment-detail-field{padding:14px;border:1px solid var(--line);border-radius:9px;background:var(--paper)}
+.appointment-detail-field small{display:block;color:var(--muted);margin-bottom:5px}
+.appointment-detail-field strong{font-size:1rem}
+.appointment-detail-description{padding-top:15px;border-top:1px solid var(--line)}
+.appointment-detail-description h4{color:var(--navy);margin-bottom:9px}
+.appointment-detail-description p{white-space:pre-wrap}
+.appointment-detail-links{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+
+
+/* Individual client schedule: every appointment row opens its own details. */
+.client-appointments-table .client-appointment-row{cursor:pointer;transition:background-color .12s ease}
+.client-appointments-table .client-appointment-row:hover,
+.client-appointments-table .client-appointment-row:focus-visible{background:var(--paper)}
+.client-appointments-table .client-appointment-row:focus-visible{outline:2px solid var(--blue);outline-offset:-2px}
+
+/* Primary navigation: only Dashboard and Clients are visible. Other page routes remain intact. */
+nav.tabs > a:not([href="./dashboard.html"]):not([href="./clients.html"]){display:none}
+
+/* Simple signed-in header: account name above its real role, no impersonation selector. */
+.top .as{display:none}
+.top .me{min-width:0}
+.top .me strong{font-weight:700}
