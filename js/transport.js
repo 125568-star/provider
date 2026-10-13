@@ -7,6 +7,7 @@ async function transportLoad(){
 }
 const equipmentName=id=>transport.equipment.find(e=>e.id===id)?.name||'—';
 const employeeName=id=>transport.employees.find(e=>e.id===id)?.full_name||'Unassigned';
+const transportEmployeeLink=id=>{const employee=transport.employees.find(e=>e.id===id);return employee&&typeof employeeIdentity==='function'?employeeIdentity(employee):esc(employeeName(id));};
 const tripClients=id=>transport.passengers.filter(p=>p.trip_id===id).map(p=>D.clientRecords.find(c=>c.id===p.client_id)).filter(Boolean);
 function appointmentTransportSummary(appointmentId){
  const links=transport.passengers.filter(x=>x.appointment_id===appointmentId);
@@ -40,7 +41,7 @@ function viewEquipment(){
   return transportHeader(e.name,'<button class="ghost sm" data-act="equipment-back">Back to Equipment</button>')+
    '<div class="card"><p><strong>Registration:</strong> '+esc(e.registration||'—')+' · <strong>Capacity:</strong> '+esc(e.capacity)+' passengers</p><p>'+esc(e.description||'')+'</p><button class="ghost sm" data-act="edit-equipment" data-id="'+esc(e.id)+'">Edit equipment</button></div>'+
    transportHeader('Transport appointments','<button class="primary" data-act="new-trip" data-equipment="'+esc(e.id)+'">Add appointment</button>')+
-   (trips.length?'<div class="scroll"><table><thead><tr><th>Date</th><th>Time</th><th>Appointment</th><th>Driver</th><th>Clients</th><th></th></tr></thead><tbody>'+trips.map(t=>'<tr><td>'+esc(t.trip_date)+'</td><td>'+esc(t.trip_time?.slice(0,5)||'—')+'</td><td><a class="link" href="./transport-appointment.html?id='+encodeURIComponent(t.id)+'">'+esc(t.title)+'</a></td><td>'+esc(employeeName(t.employee_id))+'</td><td>'+tripClients(t.id).map(c=>transportPassengerLabel(t,c)).join('<hr>')+'</td><td><button class="ghost sm" data-act="edit-trip" data-id="'+esc(t.id)+'">Edit</button></td></tr>').join('')+'</tbody></table></div>':'<div class="empty">No appointments for this equipment yet.</div>');
+   (trips.length?'<div class="scroll"><table><thead><tr><th>Date</th><th>Time</th><th>Appointment</th><th>Driver</th><th>Clients</th><th></th></tr></thead><tbody>'+trips.map(t=>'<tr><td>'+esc(t.trip_date)+'</td><td>'+esc(t.trip_time?.slice(0,5)||'—')+'</td><td><a class="link" href="./transport-appointment.html?id='+encodeURIComponent(t.id)+'">'+esc(t.title)+'</a></td><td>'+transportEmployeeLink(t.employee_id)+'</td><td>'+tripClients(t.id).map(c=>transportPassengerLabel(t,c)).join('<hr>')+'</td><td><button class="ghost sm" data-act="edit-trip" data-id="'+esc(t.id)+'">Edit</button></td></tr>').join('')+'</tbody></table></div>':'<div class="empty">No appointments for this equipment yet.</div>');
  }
  return transportHeader('Equipment','<button class="primary" data-act="new-equipment">Add equipment</button>')+
  '<div class="scroll"><table><thead><tr><th>Equipment</th><th>Registration</th><th>Seats</th><th>Appointments</th><th></th></tr></thead><tbody>'+transport.equipment.map(e=>'<tr><td><a class="link" href="./equipment.html?id='+encodeURIComponent(e.id)+'"><strong>🚐 '+esc(e.name)+'</strong></a></td><td>'+esc(e.registration||'—')+'</td><td>'+esc(e.capacity)+'</td><td>'+transport.trips.filter(t=>t.equipment_id===e.id).length+'</td><td><button class="ghost sm" data-act="edit-equipment" data-id="'+esc(e.id)+'">Edit</button></td></tr>').join('')+'</tbody></table></div>';
@@ -58,7 +59,7 @@ function viewTransportAppointment(){
 async function transportSave(table,payload,id){
  const query=id?sb.from(table).update(payload).eq('id',id).select():sb.from(table).insert(payload).select();
  const {data,error}=await query;if(error||!data?.length){toast(error?.message||'Save failed',true);return null;}
- await loadAll();await transportLoad();render();toast('Saved.');return data[0];
+ await loadAll();render();toast('Saved.');return data[0];
 }
 function editEquipment(id){
  const e=transport.equipment.find(e=>e.id===id);
@@ -72,10 +73,10 @@ function editEmployee(id){
  '<label>Full name<input name="full_name" required maxlength="150" value="'+esc(e?.full_name||'')+'"></label><label>Phone<input name="phone" value="'+esc(e?.phone||'')+'"></label><label>Email<input name="email" type="email" value="'+esc(e?.email||'')+'"></label><label>Notes<textarea name="notes">'+esc(e?.notes||'')+'</textarea></label>',
  async f=>!!(await transportSave('provider_employees',f,id)));
 }
-function editTrip(id,equipment){
+function editTrip(id,equipment,employee){
  const t=transport.trips.find(x=>x.id===id);const selected=t?transport.passengers.filter(x=>x.trip_id===id).map(x=>x.client_id):[];
  openDlg(t?'Edit transport assignment':'Add transport assignment',
- '<label>Transport / Destination<input name="title" required maxlength="200" value="'+esc(t?.title||'')+'"></label><label>Equipment<select name="equipment_id" required>'+equipOpts(t?.equipment_id||equipment)+'</select></label><label>Driver / Employee<select name="employee_id">'+driverOpts(t?.employee_id)+'</select></label><label>Date<input name="trip_date" type="date" required value="'+esc(t?.trip_date||todayStr())+'"></label><label>Time<input name="trip_time" type="time" value="'+esc(t?.trip_time?.slice(0,5)||'09:00')+'"></label><label>Clients / Passengers</label><div class="card">'+passengerInputs(selected,t?.id)+'</div><label>Notes<textarea name="notes">'+esc(t?.notes||'')+'</textarea></label>',
+ '<label>Transport / Destination<input name="title" required maxlength="200" value="'+esc(t?.title||'')+'"></label><label>Equipment<select name="equipment_id" required>'+equipOpts(t?.equipment_id||equipment)+'</select></label><label>Driver / Employee<select name="employee_id">'+driverOpts(t?.employee_id||employee)+'</select></label><label>Date<input name="trip_date" type="date" required value="'+esc(t?.trip_date||todayStr())+'"></label><label>Time<input name="trip_time" type="time" value="'+esc(t?.trip_time?.slice(0,5)||'09:00')+'"></label><label>Clients / Passengers</label><div class="card">'+passengerInputs(selected,t?.id)+'</div><label>Notes<textarea name="notes">'+esc(t?.notes||'')+'</textarea></label>',
  async f=>{
   const form=document.getElementById('df'),ids=[...form.querySelectorAll('[name="passenger"]:checked')].map(x=>x.value); const appointmentByClient=Object.fromEntries(ids.map(cid=>[cid,form.querySelector('[data-passenger-appointment="'+cid+'"]')?.value||null]));
   const payload={title:f.title,equipment_id:f.equipment_id,employee_id:f.employee_id||null,trip_date:f.trip_date,trip_time:f.trip_time||null,notes:f.notes};
@@ -97,5 +98,5 @@ const transportActions={
  'new-equipment':()=>editEquipment(), 'edit-equipment':d=>editEquipment(d.id),
  'equipment-back':()=>{equipmentSelected=null;location.href='./equipment.html';},
  'new-employee':()=>editEmployee(),'edit-employee':d=>editEmployee(d.id),
- 'new-trip':d=>editTrip(null,d.equipment),'edit-trip':d=>editTrip(d.id)
+ 'new-trip':d=>editTrip(null,d.equipment,d.employee),'edit-trip':d=>editTrip(d.id)
 };
