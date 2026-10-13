@@ -114,7 +114,20 @@ document.addEventListener('click', e => {
   const choice = e.target.closest('[data-theme-choice]'); if (choice) { setTheme(choice.dataset.themeChoice); return; }
   const a = e.target.closest('[data-act]'); if (a) return (transportActions[a.dataset.act] || ACT[a.dataset.act])?.(a.dataset);
   const t = e.target.closest('[data-tab]'); if (t) { location.href = './'+TAB_PATH[t.dataset.tab]; return; }
-  const m = e.target.closest('[data-mode]'); if (m) { authMode = m.dataset.mode; renderAuth(); }
+  const m = e.target.closest('[data-mode]'); if (m) { authMode = m.dataset.mode; renderAuth(); return; }
+  // Clicking blank space in a directory row opens that record. Inner links and buttons keep their own actions.
+  const row = e.target.closest('tr[data-row-href]');
+  if (row && !e.target.closest('a,button,input,select,textarea,label,[role="button"],[contenteditable]')) {
+    location.assign(row.dataset.rowHref);
+  }
+});
+document.addEventListener('keydown', e => {
+  // Rows can be focused using Tab and opened with Enter or Space.
+  const row = e.target.closest('tr[data-row-href]');
+  if (row && e.target === row && (e.key === 'Enter' || e.key === ' ')) {
+    e.preventDefault();
+    location.assign(row.dataset.rowHref);
+  }
 });
 document.addEventListener('submit', e => {
   if (e.target.id==='client-form') {e.preventDefault();saveClientRecord(e.target);}
