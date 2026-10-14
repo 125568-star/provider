@@ -384,3 +384,47 @@ document.addEventListener('keydown',e=>{
     location.assign(row.dataset.dashAppointmentHref);
   }
 });
+
+
+
+/* Business add-on: loaded on existing pages without changing authentication or existing features. */
+(function(){
+  const baseRender=render;
+  const baseLoad=loadAll;
+  function addBusinessLink(){
+    const nav=document.querySelector('nav.tabs');
+    if(!nav||!isCoord()||nav.querySelector('[data-business-nav]'))return;
+    const link=document.createElement('a');
+    link.href='./business.html';
+    link.textContent='Business';
+    link.setAttribute('data-business-nav','');
+    if(tab==='business'){
+      nav.querySelector('[aria-current="page"]')?.removeAttribute('aria-current');
+      link.setAttribute('aria-current','page');
+    }
+    nav.append(link);
+  }
+  loadAll=async function(){
+    await baseLoad();
+    if(tab!=='business')return;
+    await Promise.all([['businessNotes','business_notes'],['businessInvoices','business_invoices']].map(async ([key,table])=>{
+      const {data,error}=await sb.from(table).select('*');
+      if(error){D[key]=[];loadErrs.push(table+': '+error.message);}
+      else D[key]=data||[];
+    }));
+  };
+  render=function(){
+    if(tab!=='business'){
+      baseRender();
+      addBusinessLink();
+      return;
+    }
+    if(!me)return;
+    const saved=tab;
+    tab='dashboard';
+    try{baseRender();}finally{tab=saved;}
+    addBusinessLink();
+    const main=document.querySelector('#app main');
+    if(main)main.innerHTML=(loadErrs.length?'<div class="errbox">Some data could not be loaded:<br>'+loadErrs.map(esc).join('<br>')+'</div>':'')+viewBusiness();
+  };
+})();
